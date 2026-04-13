@@ -106,45 +106,51 @@ def retrieve_context(query_vec):
 
 # --- Main UI ---
 st.title("💠 Endee Knowledge Explorer")
-st.caption("A production-ready RAG framework built with Endee, Streamlit, and Groq.")
+st.markdown("---")
 
-tab1, tab2, tab3 = st.tabs(["📂 Knowledge Base", "💬 AI Explorer", "📊 Insights"])
+if not st.session_state.processed_docs:
+    # 🌟 Welcome Onboarding View
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.markdown("""
+        # Welcome to the Future of Knowledge 🚀        
+        Endee AI transforms your static documents into interactive, searchable intelligence. 
+        
+        ### How it works:
+        1. **Upload** a document (PDF, Word, or TXT).
+        2. **Explore** via semantic chat or quick-action insights.
+        3. **Analyze** with automated executive summarization.
+        """)
+        st.info("💡 Tip: Use the sidebar to configure your Groq API Key for the best experience.")
+    with col2:
+        st.image("https://img.icons8.com/fluency/240/artificial-intelligence.png", width=200)
 
-with tab1:
-    if not st.session_state.processed_docs:
-        st.subheader("Add Knowledge")
-        uploaded_file = st.file_uploader("Upload PDF, Word, or Text", type=["pdf", "docx", "txt"])
-        if uploaded_file:
-            with st.status("🚀 Ingesting Knowledge...", expanded=True) as status:
-                try:
-                    proc = DocumentProcessor()
-                    text = proc.extract_text(uploaded_file)
-                    st.session_state.doc_text = text
-                    
-                    st.write("Generating segments...")
-                    chunks = proc.split_text(text)
-                    
-                    st.write("Encoding semantic vectors...")
-                    embeddings = proc.generate_embeddings(chunks)
-                    
-                    st.session_state.local_knowledge = list(zip(chunks, embeddings))
-                    st.session_state.processed_docs = True
-                    status.update(label="✅ Knowledge Ready!", state="complete")
-                    st.rerun()
-                except Exception as e:
-                    status.update(label="❌ Ingestion Failed", state="error")
-                    st.error(f"Error details: {str(e)}")
-    else:
-        st.success("✅ Knowledge Base Active")
-        st.info(f"Source file: Document processed ({len(st.session_state.doc_text)} chars)")
-        if st.button("🔄 Swap Document"):
-            st.session_state.processed_docs = False
-            st.rerun()
+    st.divider()
+    st.subheader("🏁 Get Started")
+    uploaded_file = st.file_uploader("Drop your file here to initialize the engine", type=["pdf", "docx", "txt"])
+    if uploaded_file:
+        with st.status("🚀 Initializing Neural Engine...", expanded=True) as status:
+            try:
+                proc = DocumentProcessor()
+                text = proc.extract_text(uploaded_file)
+                st.session_state.doc_text = text
+                st.write("Chunking document segments...")
+                chunks = proc.split_text(text)
+                st.write("Generating embedding vectors...")
+                embeddings = proc.generate_embeddings(chunks)
+                st.session_state.local_knowledge = list(zip(chunks, embeddings))
+                st.session_state.processed_docs = True
+                status.update(label="✅ Engine Online!", state="complete")
+                st.rerun()
+            except Exception as e:
+                status.update(label="❌ Critical Error", state="error")
+                st.error(f"Reason: {str(e)}")
 
-with tab2:
-    if not st.session_state.processed_docs:
-        st.warning("⚠️ Please upload a document to begin.")
-    else:
+else:
+    # 💠 Active Analysis View
+    tab1, tab2, tab3 = st.tabs(["💬 Dynamic Chat", "📊 Executive Summary", "🛠️ Knowledge Base"])
+
+    with tab1:
         # Interaction Shortcuts
         col1, col2, col3 = st.columns(3)
         trigger_query = None
@@ -169,13 +175,13 @@ with tab2:
             st.session_state.chat_history.append({"role": "user", "content": query})
             
             with st.chat_message("assistant"):
-                with st.spinner("Searching..."):
+                with st.spinner("Searching neural index..."):
                     proc = DocumentProcessor()
                     query_vec = proc.generate_query_embedding(query)
                     context, sources = retrieve_context(query_vec)
                 
                 if not context:
-                    response = "⚠️ I don't see any relevant information in the current document to answer that."
+                    response = "⚠️ No matching context found in the uploaded document."
                     st.markdown(response)
                 else:
                     prompt = f"System: Use the context below to answer accurately.\nContext: {context}\n\nUser: {query}"
@@ -188,19 +194,16 @@ with tab2:
                 
                 st.session_state.chat_history.append({"role": "assistant", "content": full_response if context else "No context found."})
 
-with tab3:
-    if not st.session_state.processed_docs:
-        st.warning("⚠️ Upload data to unlock insights.")
-    else:
+    with tab2:
         st.subheader("📄 AI Executive Summary")
         if not st.session_state.doc_summary:
-            if st.button("🪄 Initialize Deep Analysis", type="primary"):
+            if st.button("🪄 Initialize Deep Analysis", type="primary", use_container_width=True):
                 st.session_state.doc_summary = llm.summarize(st.session_state.doc_text)
                 st.rerun()
         
         if st.session_state.doc_summary:
             st.markdown(st.session_state.doc_summary)
-            if st.button("♻️ Refresh Analysis"):
+            if st.button("♻️ Refresh Analysis", use_container_width=True):
                 st.session_state.doc_summary = ""
                 st.rerun()
         
@@ -209,3 +212,14 @@ with tab3:
         health_col1, health_col2 = st.columns(2)
         health_col1.metric("Context Retention", "100%", "Optimized")
         health_col2.metric("Search Latency", "< 50ms", "Excellent")
+
+    with tab3:
+        st.subheader("🛠️ Management")
+        st.success("✅ Neural Index Active")
+        st.info(f"Source file segments: {len(st.session_state.local_knowledge)} blocks")
+        st.info(f"Total tokens processed (est): {len(st.session_state.doc_text) // 4}")
+        
+        if st.button("🔄 Swap Knowledge Source", use_container_width=True):
+            st.session_state.processed_docs = False
+            st.session_state.doc_summary = ""
+            st.rerun()
