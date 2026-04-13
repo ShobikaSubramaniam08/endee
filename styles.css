@@ -39,6 +39,7 @@ h1 {
     font-family: 'Outfit', sans-serif !important;
     background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800 !important;
     letter-spacing: -1px;
