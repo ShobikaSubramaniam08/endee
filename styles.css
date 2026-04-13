@@ -1,0 +1,90 @@
+/* Import Modern Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;400;600&display=swap');
+
+:root {
+    --primary: #6366f1;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --text: #f8fafc;
+    --glass: rgba(30, 41, 59, 0.7);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+/* Global Styles */
+.stApp {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+}
+
+/* Glassmorphism Containers */
+.stMarkdown, .stButton, .stFileUploader {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Typography Enhancements */
+h1 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    background: linear-gradient(to right, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3rem !important;
+}
+
+h2, h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+}
+
+/* Chat Message Styling */
+.user-msg {
+    background: var(--primary);
+    color: white;
+    border-radius: 12px 12px 0 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+    max-width: 80%;
+    align-self: flex-end;
+}
+
+.bot-msg {
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 12px 12px 12px 0;
+    padding: 1rem;
+    margin: 1rem 0;
+    max-width: 80%;
+    border-left: 4px solid var(--primary);
+}
+
+/* Source Citation Styling */
+.source-card {
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 2px solid #818cf8;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border-radius: 4px;
+}
+
+/* Sidebar Styling */
+.css-1d391kg {
+    background-color: var(--background);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stChatMessage {
+    animation: fadeIn 0.4s ease-out;
+}
